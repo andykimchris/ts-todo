@@ -6,6 +6,7 @@ body {
   scrollbar-width: thin;
   margin: 0;
   overflow-x: hidden;
+  background-color: #6f9ecf;
 }
 
 ::-webkit-scrollbar {
