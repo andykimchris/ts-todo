@@ -44,9 +44,9 @@ const SingleTodo = ({ index, task, todos, setTodoList }: SingleTodoProps) => {
 
     return ( 
         <Draggable draggableId={task.id} index={index}>
-            {(provided) => (
+            {(provided, snapshot) => (
                 <form 
-                    className="todos__single" 
+                    className={`todos__single ${snapshot.isDragging ? "drag" : ""}`}
                     onSubmit={e => handleEdit(e, task)}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -61,9 +61,9 @@ const SingleTodo = ({ index, task, todos, setTodoList }: SingleTodoProps) => {
         
                     />
                 ) : task.isComplete ? (
-                    <s className="todos__single_text">{task.todo}</s>
+                    <s className="todos__single--text">{task.todo}</s>
                 ) : (
-                    <span className="todos__single_text">{task.todo}</span>
+                    <span className="todos__single--text">{task.todo}</span>
                 )}
 
                 <span className="icon" 
