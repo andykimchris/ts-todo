@@ -24,8 +24,7 @@ const App: React.FC = () => {
   }
 
   const onDragEnd = (result: DropResult) => {
-    const { destination, source } = result
-    console.log(result)
+    const { destination, source, draggableId } = result
 
     if (!destination) return
 
@@ -35,6 +34,7 @@ const App: React.FC = () => {
     let active = todoList
     let completed = completedTodos
 
+    // Mark task as complete or incomplete AND add task to todoList or completedTodos array 
     if (source.droppableId === "TodosList") {
       add = active[source.index]
       active.splice(source.index, 1)
@@ -49,6 +49,17 @@ const App: React.FC = () => {
       completed.splice(destination.index, 0, add)
     }
 
+    if (source.droppableId === "TodosList" && destination.droppableId === "TodosListCompleted") {
+      const updatedTodos = completedTodos.map((todo) =>
+            todo.id === draggableId ? { ...todo, isComplete: !todo.isComplete } : todo
+          )   
+      setCompletedTodos(updatedTodos)
+    } else if (source.droppableId === "TodosListCompleted" && destination.droppableId === "TodosList") {
+      const updatedTodos = todoList.map((todo) =>
+          todo.id === draggableId ? { ...todo, isComplete: !todo.isComplete } : todo
+        )   
+        setTodoList(updatedTodos)
+    }
   }
 
   return (
@@ -57,6 +68,10 @@ const App: React.FC = () => {
         <span className="heading">
           Todo List
         </span>
+        <h3>
+          Drag & Drop
+        </h3>
+
         <InputField todo={todo} setTodo={setTodo} handleTodoAddition={handleTodoAddition}/>
         <TodoList todos={todoList} completedTodos={completedTodos} setCompletedTodos={setCompletedTodos} setTodoList={setTodoList} />
       </div>

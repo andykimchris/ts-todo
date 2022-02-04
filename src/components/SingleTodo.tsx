@@ -2,7 +2,6 @@ import { TodoState } from "../model";
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import { MdDone } from "react-icons/md";
 import { Draggable } from "react-beautiful-dnd";
 
 interface SingleTodoProps {
@@ -26,15 +25,13 @@ const SingleTodo = ({ index, task, todos, setTodoList }: SingleTodoProps) => {
     }
     
     const handleDelete = (task: TodoState) => {
-        const updatedTodos: TodoState[] = todos.filter((todo) => todo.id !== task.id)
-        setTodoList(updatedTodos)
-    }
-
-    const handleDone = (task: TodoState) => {
-        const updatedTodos: TodoState[] = todos.map((todo) =>
-            todo.id === task.id ? { ...todo, isComplete: !todo.isComplete } : todo
-        )  
-        setTodoList(updatedTodos)
+        if (task.isComplete) {
+            const updatedTodos: TodoState[] = todos.filter((todo) => todo.id !== task.id)
+            setTodoList(updatedTodos)
+        } else {
+            const updatedTodos: TodoState[] = todos.filter((todo) => todo.id !== task.id)
+            setTodoList(updatedTodos)
+        }
     }
 
     const inputRef = useRef<HTMLInputElement>(null);
@@ -66,19 +63,16 @@ const SingleTodo = ({ index, task, todos, setTodoList }: SingleTodoProps) => {
                     <span className="todos__single--text">{task.todo}</span>
                 )}
 
-                <span className="icon" 
+                {!task.isComplete && <span className="icon" 
                     onClick={() => {
                         if (!edit && !task.isComplete) {
                         setEdit(!edit)  
                         }
                 }}>
                     <AiFillEdit />
-                </span>
+                </span>}
                 <span className="icon" onClick={() => handleDelete(task)}>
                     <AiFillDelete />
-                </span>
-                <span className="icon" onClick={() => handleDone(task)}>
-                    <MdDone />
                 </span>
             </form>
         )}  
