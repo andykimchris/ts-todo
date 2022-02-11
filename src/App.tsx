@@ -1,31 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { v4 as uuid } from 'uuid';
 import './App.css';
 import InputField from './components/InputField';
 import TodoList from './components/TodoList';
 import { TodoState } from './model';
+import { useLocalStorage } from "./hooks/useLocalStorage"
 
 const App: React.FC = () => {
 
+  const [todoList, setTodoList] = useLocalStorage("TodosList", []);
   const [todo, setTodo] = useState<string>('');
-  const [todoList, setTodoList] = useState<TodoState[]>([]);
-  const [completedTodos, setCompletedTodos] = useState<TodoState[]>([]);
+  const [completedTodos, setCompletedTodos] = useLocalStorage("TodosListCompleted", []);
   const id: string = uuid();
 
   const handleTodoAddition = (e: React.FormEvent) => {
     e.preventDefault();
-    if(todo) {
+    if (todo) {
       const todo_obj = { id: id, todo: todo, isComplete: false };
-      const newTodoList: TodoState[]  = [...todoList,  todo_obj]
-      setTodoList(newTodoList); 
+      const newTodoList: TodoState[] = [...todoList, todo_obj]
+      setTodoList(newTodoList);
     }
     setTodo('')
   }
 
+  useEffect(() => {
+    localStorage.setItem("TodosList", JSON.stringify(todoList));
+    localStorage.setItem("TodosListCompleted", JSON.stringify(completedTodos));
+  }, [todoList, completedTodos]);
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result
-
     if (!destination) return
 
     if (destination.droppableId === source.droppableId && destination.index === source.index) return
@@ -50,21 +55,21 @@ const App: React.FC = () => {
     }
 
     if (source.droppableId === "TodosList" && destination.droppableId === "TodosListCompleted") {
-      const updatedTodos = completedTodos.map((todo) =>
-            todo.id === draggableId ? { ...todo, isComplete: !todo.isComplete } : todo
-          )   
+      const updatedTodos = completedTodos.map((todo: TodoState) =>
+        todo.id === draggableId ? { ...todo, isComplete: !todo.isComplete } : todo
+      )
       setCompletedTodos(updatedTodos)
     } else if (source.droppableId === "TodosListCompleted" && destination.droppableId === "TodosList") {
-      const updatedTodos = todoList.map((todo) =>
-          todo.id === draggableId ? { ...todo, isComplete: !todo.isComplete } : todo
-        )   
-        setTodoList(updatedTodos)
+      const updatedTodos = todoList.map((todo: TodoState) =>
+        todo.id === draggableId ? { ...todo, isComplete: !todo.isComplete } : todo
+      )
+      setTodoList(updatedTodos)
     }
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-       <div className="App">
+      <div className="App">
         <span className="heading">
           Todo List
         </span>
@@ -72,11 +77,10 @@ const App: React.FC = () => {
           Drag & Drop
         </h3>
 
-        <InputField todo={todo} setTodo={setTodo} handleTodoAddition={handleTodoAddition}/>
+        <InputField todo={todo} setTodo={setTodo} handleTodoAddition={handleTodoAddition} />
         <TodoList todos={todoList} completedTodos={completedTodos} setCompletedTodos={setCompletedTodos} setTodoList={setTodoList} />
       </div>
     </DragDropContext>
-   
   );
 };
 
