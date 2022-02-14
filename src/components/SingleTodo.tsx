@@ -63,7 +63,7 @@ const SingleTodo = ({ index, task, todos, setTodoList }: SingleTodoProps) => {
                     <span className="todos__single--text">{task.todo}</span>
                 )}
 
-                {!task.isComplete && <span className="icon" 
+                {<span className="icon" 
                     onClick={() => {
                         if (!edit && !task.isComplete) {
                         setEdit(!edit)  
